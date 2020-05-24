@@ -1,0 +1,45 @@
+YANEL - Yet Another NASM Educational Library
+__   __ _    _   _ _____ _
+\ \ / // \  | \ | | ____| |
+ \ V // _ \ |  \| |  _| | |
+  | |/ ___ \| |\  | |___| |___
+  |_/_/   \_\_| \_|_____|_____|
+
+	This library provides functions and macros for reading and writing. It's
+written in NASM and only uses systemcalls without calling functions from libc.
+Linux(amd64) is supported.
+
+	Functions follow System V AMD64 ABI, so it's possible to link yanel.o
+as a module and call the functions using other languages (C for example). More
+about calling conventions you can read here:
+https://github.com/hjl-tools/x86-psABI/wiki/X86-psABI
+
+Usage
+1) Functions:
+_print_udec - Print unsigned decimal number from first argument. On success,
+the number of bytes written is returned.  On error, -1 is returned.
+_print_dec - same, but for signed decimal number.
+_print_hex - same, but output is hexadecimal.
+_print_bin - same, but output is binary.
+_get_dec - Read decimal number from stdin and return it.
+_get_hex - same but for hexadecimal.
+_getchar - read 1 character from stdin with bufferization. On error, -1 is
+returned, otherwise the character.
+_putchar - print char (first argument) to stdout. On error, -1 is returned,
+otherwise number of bytes written. It's not bufferized.
+_strlen - returns length of the string ending by '\0'. Address of the first character passed
+as first argument. This function is not safe.
+
+2) Macros:
+
+NAME; ARGUMENTS; DESCRIPTION
+PRINT_UDEC ; register; Prints unsigned decimal number.
+PRINT_DEC ; register; Prints signed decimal number.
+PRINT_CHAR ; byte register/Immediate/Memory; Prints character.
+PRINT_STRING ; Label; Print string that ends with terminating character.
+NEWLINE ; - ; Prints new line symbol.
+GET_DEC (GET_HEX) ; register; Places decimal (hexadecimal) integer from stdin
+to the argument.
+GET_CHAR ; byte register; Read 1 character to the argument
+GET_STRING ; Label; Read string from stdin, ends string with '\0'.
+
