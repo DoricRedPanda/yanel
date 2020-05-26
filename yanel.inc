@@ -336,8 +336,8 @@ _atoi: ; (string pointer)
 	cmp dl, '9'
 	ja .FIN
 	lea rax, [5 * rax]  ; multiplying by 10
-	shl rax, 1		; like cool kids
-	and dl, 0xF		; char -> digit like a hacker
+	shl rax, 1
+	and dl, 0xF		; char -> digit
 	add rax, rdx
 	inc rdi
 	cmp byte [rdi], 0
@@ -351,12 +351,14 @@ _atoih: ; (string pointer)
 	cmp dl, '0'
 	jb .FIN
 	cmp dl, '9'
-	ja .AtoF
+	ja .letter
 	and dl, 0xF		; char -> digit (0-9)
 	jmp .ADD
-.AtoF:	and dl, 11011111b	; upper case like a hacker
-	sub dl, 'A' - 10	; microoptimise like a boss
-	jl .FIN
+.letter:
+	and dl, 11011111b	; upper case
+	sub dl, 'A'
+	jb .FIN
+	add dl, 10
 	test dl, 11110000b
 	jnz .FIN
 .ADD:	shl rax, 4
@@ -453,6 +455,9 @@ _print_dec: ; (value)
 	call _itoa
 .PRINT:	WRITE rax, rdx
 	ret ; (error code)
+
+_print_float:
+	ret
 
 ;Macros from io.inc
 %macro IS_GPR 1.nolist
