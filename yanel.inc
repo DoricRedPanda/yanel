@@ -97,11 +97,15 @@
 %endmacro
 
 %macro PRINT_CHAR 1 ;(reg/IM/MEM)
-	push rax
-	mov al, %1
-	mov byte [_char], al
-	_syscall_write _char, 1
-	pop rax
+	IS_GPR %1
+	push rdi
+%if %$is_reg = 1 && %$reg_size < 8
+	movsx rdi, %1
+%else
+	mov rdi, %1
+%endif
+	call _putchar
+	pop rdi
 %endmacro
 
 ;If you want to handle errors, call function _getchar instead
@@ -208,7 +212,6 @@ _buflen dq 0
 section .bss
 _buffer		resb _BUFSIZ ; buffer for storing input, important
 _wordbuf	resb _WORDBUFSIZ ; general buffer, assume it's always dirty
-_char		resq 1
 section .text
 ; Arguments are passed in registers according to System V AMD64 ABI.
 ; It's rather tricky, but it's essential to call functions from C library,
@@ -243,9 +246,11 @@ global _strlen
 %endif
 
 _putchar: ; (char)
-	mov [_char], dil
-	_syscall_write _char, 1
+	push rdi ; store argument at stack
+	_syscall_write rsp, 1 ; rsp points to argument
+	add rsp, 8
 	ret ; (error code)
+
 _getchar: ; (void)
 	mov rsi, [_bufpos]
 	cmp rsi, [_buflen]
