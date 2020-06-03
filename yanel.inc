@@ -52,10 +52,16 @@
 	push rcx
 	push rdx
 %if %$is_reg = 1
-%if %$reg_size < 8
+%if %$reg_size = 8
+	mov rdi, %2
+%elif %$reg_size = 4
+%ifidni %3, movsx
 	%3 rdi, %2
 %else
-	mov rdi, %2
+	mov edi, %2
+%endif
+%elif %$reg_size < 4
+	%3 rdi, %2
 %endif
 %else
 %error Register expected
@@ -98,6 +104,7 @@
 
 %macro PRINT_CHAR 1 ;(reg/IM/MEM)
 	IS_GPR %1
+	push rax
 	push rdi
 %if %$is_reg = 1 && %$reg_size < 8
 	movsx rdi, %1
@@ -106,6 +113,7 @@
 %endif
 	call _putchar
 	pop rdi
+	pop rax
 %endmacro
 
 ;If you want to handle errors, call function _getchar instead
